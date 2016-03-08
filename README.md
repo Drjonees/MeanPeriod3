@@ -186,7 +186,7 @@ NoSQL databases are often classified by which data model they use.
 
 There are 4 primary categories:
 
-* #### Document Oriented
+##### Document Oriented
 In a document oriented database, the data is stored in documents.
 These documents typically use a structure like JSON.
 Compared to relational databases, documents provides an intuitive and natual way to model data.
@@ -197,18 +197,18 @@ In a document database, the notion of a schema is dynamic: each document can con
 
 ![Document Oriented](http://www.differencebetween.info/sites/default/files/images/5/documentmodel.jpg)
 
-* #### Key-Value
+##### Key-Value
 Key-Value is the simplest form of database. The data is stored and retrieved by a key. 
 It can be thought off as a hashmap, but instead of laying in server memory, it's persistet.
 
 ![Key-Value](http://a4.files.readwrite.com/image/upload/c_fit,cs_srgb,dpr_1.0,q_80,w_620/MTIyNDQxMjgwNjY3MDIwNTY5.jpg)
 
-* #### Graph Model
+##### Graph Model
 Graph databases, uses a graph like structure with nodes, edges and properties to represent data. The data is modeled as a network of replationships between different elements. It can be hard to understand how and when to use Graph model, but for relation dependent data it can be great to model the relationships between entities in an application.
 
 ![Graph Model](https://upload.wikimedia.org/wikipedia/commons/3/3a/GraphDatabase_PropertyGraph.png)
 
-* ____Wide Column Models____
+##### Wide Column Models
 Wide Column databases has some similarity to relational databases in its use of rows, columns and tables. The important difference is that columns are created for each row rather than being predefined by the table structure. It can sometimes be helpful to think of them as a key-value collection where each value in the collection is either a simple data type or another key-value collection.
 ![Wide Column Model](http://nosqlguide.com/wp-content/uploads/2014/05/WideColumn2.png)
 
