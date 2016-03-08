@@ -92,24 +92,23 @@ Instead of dividing something like a post and a comment into two seperate things
 {
     'author': 'Jonas', 
     'body': 'Post text...', 
-    'comments': ['user':'Jensa',
-                'comment':'Comment text..',
-                'user':'Lars',
-                'comment':'Great job']
+    'comments': [{'user':'Jensa',
+                'comment':'Comment text..'},
+                {'user':'Lars',
+                'comment':'Great job'}]
 }
 ```
 Now we have our posts and comments stored together, which often would make more sense.
 
 
 ##### Horizontally Scalable
-todo
+This picture shows it very well:
+![Horizontally Scaling vs Vertical Scaling](http://www.pc-freak.net/images/horizontal-vs-vertical-scaling-vertical-and-horizontal-scaling-explained-diagram.png)
+So noSQL databases are often easy to scale OUT instead of scaling UP.
+
 
 ##### BASE as Consistency Mode
-todo
 
-
-History of the term
-"Definition"
 
 
 #### Explain Pros & Cons in using a NoSQL database like MongoDB as your data store, compared to a traditional Relational SQL Database like MySQL.
@@ -154,3 +153,10 @@ Key Value
 #### Explain, using a relevant example, a full MEAN application including relevant test cases to test the REST-API (not on the production database)
 
 TODO
+
+#Resources
+http://martinfowler.com/articles/schemaless
+http://www.ignoredbydinosaurs.com/2013/05/explaining-non-relational-databases-my-mom
+https://www.mongodb.com/nosql-explained
+http://www.techrepublic.com/blog/10-things/10-things-you-should-know-about-nosql-databases/
+http://www.pc-freak.net/images/horizontal-vs-vertical-scaling-vertical-and-horizontal-scaling-explained-diagram.png
