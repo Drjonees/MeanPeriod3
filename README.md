@@ -31,7 +31,7 @@ So the schema-less way increate the overall flexability of our database.
 
 When looking at it like this, the schema-less approach seems way better than using schemas.
 But there are some arguments whether fully schema-less is actually a good thing.
-Lets look at some examples using mongoDB:
+Lets look at an example using mongoDB:
 
 We have a database filled with addresses, some of them are like this: 
 
@@ -54,10 +54,52 @@ In node.js we would do this by using the mongoose module, where the schemas are 
 
 
 ##### Open Source
-todo
+Open source means that the source code is publicly avaiable, and that everyone can add or change its original design. The changes can be used locally or requested to be part of the original code. So it often ends up with a collaborative product, where multiple programmers have been a part of the final product.
+
 
 ##### Non-relational
-todo
+Let's look at how a relational database works by using an example:
+We have a blog where we write about stuff.
+Of course we need to persist all the blog posts we make, so we have a relational database with a 'Post' table, where we store our posts.
+It could look like this:
+
+|Post_ID|Author|Post_body   |
+|:------|------|:-----------|
+| 1     | Jonas| Post text..|
+| 2     | Jonas| Post text..|
+| 3     | Jonas| Post text..|
+
+Later in our development of the blog, we decide that we want to implement comments from the readers.
+So we make a table in our database to store these comments:
+
+
+|Comment_ID |FKPost_ID |User  |Comment_Body  |
+|:----------|:---------|:-----|:-------------|
+| 1         |2         | Lars | Comment text.|
+| 2         |2         | Jensa| Comment text.|
+| 3         |3         | Bob  | Comment text.|
+
+Notice that we now have a column called "FKPost_ID", which holds the foreign key to the post table. So we know which comment belongs to which post.
+In order to get for instance post 2, with all it's comments we have to do joins:
+```sql
+SELECT * FROM Post P JOIN Comment C ON P.Post_ID = C.FKPost_ID WHERE P.Post_ID = 2;
+```
+It seems like getting something so related as a post and its comments, is a bit too complicated. 
+
+And this is where non-relational helps us.
+Instead of dividing something like a post and a comment into two seperate things, we can simply store them together!
+```javascript
+{
+    'author': 'Jonas', 
+    'body': 'Post text...', 
+    'comments': ['user':'Jensa',
+                'comment':'Comment text..',
+                'user':'Lars',
+                'comment':'Great job']
+}
+```
+Now we have our posts and comments stored together, which often would make more sense.
+
 
 ##### Horizontally Scalable
 todo
