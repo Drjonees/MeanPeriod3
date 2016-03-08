@@ -104,20 +104,81 @@ Now we have our posts and comments stored together, which often would make more 
 ##### Horizontally Scalable
 This picture shows it very well:
 ![Horizontally Scaling vs Vertical Scaling](http://www.pc-freak.net/images/horizontal-vs-vertical-scaling-vertical-and-horizontal-scaling-explained-diagram.png)
+
 So noSQL databases are often easy to scale OUT instead of scaling UP.
 
 
 ##### BASE as Consistency Mode
+Relational databases uses the ACID consistency mode:
 
 
+* Atomicity
+    A transaction is succesfully commited, or the whole transaction is rolled-back.
+    
+    
+* Consistency
+    The consistency property ensures that any transaction will bring the database from one valid state to another.
+    For instance, when changing data, it will make sure that the updated data still follows the rules for our database.
+    
+    
+* Isolation
+    Transactions won't affect other transactions by changing data that another operation is counting on.
+    
+    
+* Durability
+    The durability property ensures that once a transaction has been committed, it will remain so, even in the event of power loss, crashes, or errors.
+
+NoSQL databases uses the BASE consistency mode:
+
+* Basic Availability
+    The database guarantee availability
+    
+    
+* Soft-state
+    The state of the system may change over time, even without input. This is because of the eventual consistency model.
+    
+    
+* Eventual consistency
+    After a certain time all nodes are consistent, but at any given time this might not be the case.
+    
+###### The CAP Theorem
+* Consistency
+    All the servers in the system will have the same data so anyone using the system will get the same copy regardless of which server answers their request. 
+    
+    
+* Availability
+    The system will always respond to a request (even if it's not the latest data or consistent across the system or just a message saying the system isn't working).
+    
+    
+* Partition Tolerance
+    The system continues to operate as a whole even if individual servers fail or can't be reached.
+
+
+The CAP theorem states:
+It's theoretically impossible to have all 3 requirements met, so a combination of 2 must be chosen and this is usually the deciding factor in what technology is used.
+
+Relational prioritize Consistency and Partition Tolerance.
+NoSQL prioritize Availability and Partition Tolerance.
+
+![CAP Theorem](http://js2016.azurewebsites.net/mongoDB/images/cap.PNG)
+
+## 
+## 
 
 #### Explain Pros & Cons in using a NoSQL database like MongoDB as your data store, compared to a traditional Relational SQL Database like MySQL.
 
-Pros
+Most of this is answered in the previous question.
+So i will only summarize:
 
+* Pros
+    * Scalability
+    * Big data
+    * Economics
+    * Flexable data model
 
-Cons
-
+* Cons
+    * Maturity - Still very young technology
+    * Expertise - Hard to find experts
 
 #### Explain how databases like MongoDB and redis would be classified in the NoSQL world
 
@@ -160,3 +221,4 @@ http://www.ignoredbydinosaurs.com/2013/05/explaining-non-relational-databases-my
 https://www.mongodb.com/nosql-explained
 http://www.techrepublic.com/blog/10-things/10-things-you-should-know-about-nosql-databases/
 http://www.pc-freak.net/images/horizontal-vs-vertical-scaling-vertical-and-horizontal-scaling-explained-diagram.png
+http://js2016.azurewebsites.net/mongoDB/mongo.html
