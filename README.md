@@ -1,5 +1,7 @@
 # MeanPeriod3
 
+[I'm a reference-style link][Explain, generally, what is meant by a NoSQL database.]
+
 #### Explain, generally, what is meant by a NoSQL database.
 
 History of the term
