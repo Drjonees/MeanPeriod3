@@ -210,6 +210,7 @@ Graph databases, uses a graph like structure with nodes, edges and properties to
 
 ##### Wide Column Models
 Wide Column databases has some similarity to relational databases in its use of rows, columns and tables. The important difference is that columns are created for each row rather than being predefined by the table structure. It can sometimes be helpful to think of them as a key-value collection where each value in the collection is either a simple data type or another key-value collection.
+
 ![Wide Column Model](http://nosqlguide.com/wp-content/uploads/2014/05/WideColumn2.png)
 
 MongoDB belongs to the Document Oriented, and Redis belongs to te Key-Value.
