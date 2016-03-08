@@ -108,8 +108,8 @@ This picture shows it very well:
 So noSQL databases are often easy to scale OUT instead of scaling UP.
 
 
-##### BASE as Consistency Mode
-Relational databases uses the ACID consistency mode:
+##### BASE as Consistency Model
+Relational databases uses the ACID consistency model:
 
 
 * Atomicity
@@ -128,7 +128,7 @@ Relational databases uses the ACID consistency mode:
 * Durability
     The durability property ensures that once a transaction has been committed, it will remain so, even in the event of power loss, crashes, or errors.
 
-NoSQL databases uses the BASE consistency mode:
+NoSQL databases uses the BASE consistency model:
 
 * Basic Availability
     The database guarantee availability
@@ -171,10 +171,10 @@ Most of this is answered in the previous question.
 So i will only summarize:
 
 * Pros
-    * Scalability
-    * Big data
-    * Economics
-    * Flexable data model
+    * Scalability - Easy to have clusters of databases.
+    * Big data - Easier to store big data.
+    * Economics - Often cheaper than relational databases.
+    * Flexable data model - Schema-less model provides more flexable data models.
 
 * Cons
     * Maturity - Still very young technology
@@ -182,9 +182,37 @@ So i will only summarize:
 
 #### Explain how databases like MongoDB and redis would be classified in the NoSQL world
 
-Document Oriented
+NoSQL databases are often classified by which data model they use.
 
-Key Value
+There are 4 primary categories:
+
+* #### Document Oriented
+In a document oriented database, the data is stored in documents.
+These documents typically use a structure like JSON.
+Compared to relational databases, documents provides an intuitive and natual way to model data.
+It's closer to the OO programming, because each document is effectively an object.
+Instead of spreading data across multiple tables and columns, that are connecting through foreign keys, each record and its associated data are stored together in a single document.
+Documents contains fields, that each contains a value(string,date,binary,array).
+In a document database, the notion of a schema is dynamic: each document can contain different fields. This flexibility can be particularly helpful for modeling unstructured and polymorphic data. It also makes it easier to evolve an application during development, such as adding new fields. 
+
+![Document Oriented](http://www.differencebetween.info/sites/default/files/images/5/documentmodel.jpg)
+
+* #### Key-Value
+Key-Value is the simplest form of database. The data is stored and retrieved by a key. 
+It can be thought off as a hashmap, but instead of laying in server memory, it's persistet.
+
+![Key-Value](http://a4.files.readwrite.com/image/upload/c_fit,cs_srgb,dpr_1.0,q_80,w_620/MTIyNDQxMjgwNjY3MDIwNTY5.jpg)
+
+* #### Graph Model
+Graph databases, uses a graph like structure with nodes, edges and properties to represent data. The data is modeled as a network of replationships between different elements. It can be hard to understand how and when to use Graph model, but for relation dependent data it can be great to model the relationships between entities in an application.
+
+![Graph Model](https://upload.wikimedia.org/wikipedia/commons/3/3a/GraphDatabase_PropertyGraph.png)
+
+* #### Wide Column Models
+Wide Column databases has some similarity to relational databases in its use of rows, columns and tables. The important difference is that columns are created for each row rather than being predefined by the table structure. It can sometimes be helpful to think of them as a key-value collection where each value in the collection is either a simple data type or another key-value collection.
+![Wide Column Model](http://nosqlguide.com/wp-content/uploads/2014/05/WideColumn2.png)
+
+MongoDB belongs to the Document Oriented, and Redis belongs to te Key-Value.
 
 
 #### Explain reasons to add a layer like Mongoose, on top on of a schema-less database like MongoDB
@@ -208,7 +236,13 @@ TODO
 
 #### Explain how redis "fits" into the NoSQL world, and provide an example of how to use it.
 
-Key Value
+NoSQL databases are often classified by which data model they use.
+There are 4 primary categories, one of them being 'Key-Value', which redis belongs to.
+Key-value stores are probably the simplest form of database management systems. They can only store pairs of keys and values, as well as retrieve values when a key is known.
+It's simply put a hashmap that is persistent.
+
+Redis is often used to handle sessions because it's super fast, and makes sessions across multiple node.js servers possible.
+
 
 
 #### Explain, using a relevant example, a full MEAN application including relevant test cases to test the REST-API (not on the production database)
