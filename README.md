@@ -195,21 +195,37 @@ Instead of spreading data across multiple tables and columns, that are connectin
 Documents contains fields, that each contains a value(string,date,binary,array).
 In a document database, the notion of a schema is dynamic: each document can contain different fields. This flexibility can be particularly helpful for modeling unstructured and polymorphic data. It also makes it easier to evolve an application during development, such as adding new fields. 
 
+Used in:
+    * MongoDB
+    * CouchDB
+
 ![Document Oriented](http://scraping.pro/res/nosql/document_database.png)
 
 ##### Key-Value
 Key-Value is the simplest form of database. The data is stored and retrieved by a key. 
 It can be thought off as a hashmap, but instead of laying in server memory, it's persistet.
 
+Used in:
+    * Redis
+    * Riak
+
 ![Key-Value](http://scraping.pro/res/nosql/keyvalue_database.png)
 
 ##### Graph Model
 Graph databases, uses a graph like structure with nodes, edges and properties to represent data. The data is modeled as a network of replationships between different elements. It can be hard to understand how and when to use Graph model, but for relation dependent data it can be great to model the relationships between entities in an application.
 
+Used in:
+    * Neo4j
+    * Infinite Graph
+
 ![Graph Model](http://scraping.pro/res/nosql/graph_database.png)
 
 ##### Wide Column Models
 Wide Column databases has some similarity to relational databases in its use of rows, columns and tables. The important difference is that columns are created for each row rather than being predefined by the table structure. It can sometimes be helpful to think of them as a key-value collection where each value in the collection is either a simple data type or another key-value collection.
+
+Used in:
+    * Cassandra
+    * HBase
 
 ![Wide Column Model](http://scraping.pro/res/nosql/column_database.png)
 
