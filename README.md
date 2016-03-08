@@ -14,7 +14,7 @@ Pros
 Cons
 
 
-* __Explain how databases like MongoDB and redis would be classified in the NoSQL world__
+* _Explain how databases like MongoDB and redis would be classified in the NoSQL world_
 
 Document Oriented
 
