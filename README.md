@@ -654,9 +654,15 @@ TODO
 
 #Resources
 http://martinfowler.com/articles/schemaless
- http://www.ignoredbydinosaurs.com/2013/05/explaining-non-relational-databases-my-mom
- https://www.mongodb.com/nosql-explained
- http://www.techrepublic.com/blog/10-things/10-things-you-should-know-about-nosql-databases/
- http://www.pc-freak.net/images/horizontal-vs-vertical-scaling-vertical-and-horizontal-scaling-explained-diagram.png
- http://js2016.azurewebsites.net
- https://docs.mongodb.org
+
+http://www.ignoredbydinosaurs.com/2013/05/explaining-non-relational-databases-my-mom
+
+https://www.mongodb.com/nosql-explained
+
+http://www.techrepublic.com/blog/10-things/10-things-you-should-know-about-nosql-databases/
+
+http://www.pc-freak.net/images/horizontal-vs-vertical-scaling-vertical-and-horizontal-scaling-explained-diagram.png
+
+http://js2016.azurewebsites.net
+
+https://docs.mongodb.org
