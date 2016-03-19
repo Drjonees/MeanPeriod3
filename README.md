@@ -524,9 +524,114 @@ So even though we're using a schema-less database, we still need to have an impl
 Mongoose is an Object Document Mapper(ODM) for MongoDB. It's the layer in between our data and our database, and gives us a schema-based way to model our data, and validating the data before putting it in our database.
 It consist of 2 core things: Schemas and Models.
 
-A schema is an object that defines the structure of the docuemnts that we want to store in our MongoDB collection. In the schema we can define types and validator for all our data.
+A schema is an object that defines the structure of the documents that we want to store in our MongoDB collection. In the schema we can define types and validator for all our data.
 
 A model is an object that gives you access to a collection, allowing you to query the collection and use the Schema to validate any documents you save to that collection. Instances of these models represent documents which can be saved and retrieved from our database.
+
+By using mongoose, we can make the joke REST-API even easier:
+
+In the www file I have:
+```javascript
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://username:password@ds062178.mlab.com:62178/school_db');
+```
+So now we have a connection to our mongoDB.
+
+Then we have to create our Schema for the jokes collection:
+```javascript
+var mongoose = require('mongoose');
+var Schema = mongoose.Schema;
+
+var JokeSchema = new Schema({
+    joke: String,
+    type: Array,
+    reference: [{
+        body: String,
+        text: String
+    }],
+    lastEdited: {
+        type: Date,
+        default: Date.now
+    }
+});
+
+module.exports = mongoose.model('Joke', JokeSchema);
+```
+
+On the last line, we're actually making the model and exporting that instead of the Schema. Then in the api.js route we can do the following for CRUD operations:
+
+```javascript
+var express = require('express');
+var router = express.Router();
+var Jokes = require('../model/jokesMongoose');
+
+router.get('/jokes', function (req, res, next) {
+    Jokes.find({}, function (err, data) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(data);
+        }
+    })
+});
+```
+As you can see, we're now using the find method of our Jokes model.
+
+For creating we do something similar:
+
+```javascript
+router.post('/joke', function (req, res, next) {
+    Jokes.create(req.body, function (err, joke) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(joke);
+        }
+    })
+});
+```
+
+For delete we do:
+
+```javascript
+router.delete('/joke/:_id', function (req, res, next) {
+    Jokes.findOneAndRemove({
+            _id: req.params._id
+        },
+        function (err, joke) {
+            console.log(req.params._id);
+            if (err) {
+                res.send(err);
+            } else {
+                res.send(joke);
+            }
+        });
+});
+```
+
+And update:
+```javascript
+
+router.put('/joke', function (req, res, next) {
+    Jokes.findOne({
+        _id: req.body._id
+    }, function (err, joke) {
+
+        for (var propertyName in req.body) {
+            joke[propertyName] = req.body[propertyName];
+        }
+
+        joke.save(function (err) {
+            if (err) {
+                res.send(err);
+            } else {
+                res.send(joke);
+            }
+        })
+    });
+});
+```
+The reason is have a for loop, is so i dont have to define which fields to update. Instead it will update all the fields that my req.body(the new joke) has.
 
 
 
