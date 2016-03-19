@@ -646,6 +646,41 @@ It's simply put a hashmap that is persistent.
 
 Redis is often used to handle sessions because it's super fast, and makes sessions across multiple node.js servers possible.
 
+This example shows a very simple way of using redis for session.
+We start by requiring the express-session and redisstore modules.
+Next we adds them as middleware.
+
+```javascript
+var session = require('express-session');
+var RedisStore = require('connect-redis')(session);
+
+app.use(session({
+  store: new RedisStore({
+    url: 'redis://redistogo:0e6756160cc4e4eb36304041c1c0c2cd@tarpon.redistogo.com:11986/'
+  }),
+  secret: "thisismysecret"
+}));
+```
+This silly example will show that the redis database saves our last page.
+
+```javascript
+app.get('/route1', function(req, res) {
+  console.log(req);
+  var tempLastPage = req.session.lastPage;
+  req.session.lastPage = "Route 1";
+  res.send("You are on route 1, last page: " + tempLastPage);
+});
+app.get('/route2', function(req, res) {
+  var tempLastPage = req.session.lastPage;
+  req.session.lastPage = "Route 2";
+  res.send("You are on route 2, last page: " + tempLastPage);
+});
+app.get('/route3', function(req, res) {
+  var tempLastPage = req.session.lastPage;
+  req.session.lastPage = "Route 3";
+  res.send("You are on route 3, last page: " + tempLastPage);
+});
+```
 
 
 #### Explain, using a relevant example, a full MEAN application including relevant test cases to test the REST-API (not on the production database)
