@@ -27,7 +27,7 @@ This is where the schema-less databases comes in.
 By not defining what kind of data needs to be in our database, we are alot more free to choose what data to store.
 We can for example have a person where we only have the firstname stored, but also store another person with both firstname, lastname, date of birth without any problems.
 If we later on want to add extra information to our persons, this can easily be achieved, by simply adding the data to the person.
-So the schema-less way increate the overall flexability of our database.
+So the schema-less way increase the overall flexability of our database.
 
 When looking at it like this, the schema-less approach seems way better than using schemas.
 But there are some arguments whether fully schema-less is actually a good thing.
@@ -234,21 +234,302 @@ MongoDB belongs to the Document Oriented, and Redis belongs to te Key-Value.
 
 #### Explain reasons to add a layer like Mongoose, on top on of a schema-less database like MongoDB
 
-TODO
+One of the first things you'll hear about MongoDB is that it's schema-less!
+
+In order to understand schema-less we have to understand how the relational database uses schemas.
+In a relational database, we have tables that have predefined columns. 
+We can for instance have a column with a 'firstname', and we tell the database that this column can only contain text.
+Or we can have a date of birth column where the database knowns that only Date objects can fit into.
+
+So with relational databases, we define a schmea for the data we put in, so we have a structured layer for all the data.
+If we try to insert some data that doesn't fit the structure we have defined, we will simply get an error.
+The schema way of structuring your data, can both be good and bad. 
+If we have data that has very consistent structure and fits well with the relational database, it's no problem, but as soon as we want to change the structure of the data, it often leeds to downtime or annoying complications. 
+
+This is where the schema-less databases comes in.
+By not defining what kind of data needs to be in our database, we are alot more free to choose what data to store.
+We can for example have a person where we only have the firstname stored, but also store another person with both firstname, lastname, date of birth without any problems.
+If we later on want to add extra information to our persons, this can easily be achieved, by simply adding the data to the person.
+So the schema-less way increase the overall flexability of our database.
+
+When looking at it like this, the schema-less approach seems way better than using schemas.
+But there are some arguments whether fully schema-less is actually a good thing.
+Lets look at an example using mongoDB:
+
+We have a database filled with addresses, some of them are like this: 
+
+{'firstname': 'Jonas', 'lastname': 'Bjoern', '**zip**': '2860'}
+
+and some like this:
+
+{'firstname': 'Lars', 'lastname': 'Mortensen', '**zipcode**': '2860'}
+
+This is perfectly legal to do in our database, but gives us some problems when we want to manipulate the data.
+Lets say we want to find all persons that live in zipcode 2860:
+persons.find({'zip': '2860'})
+This would however only give us 'Jonas', because 'Lars' doesn't have a field called "zip", but instead it's called "zipcode".
+
+So even though we're using a schema-less database, we still need to have an implicit schema, so we all know that a person should have a zipcode and not zip (or vise verca). One could argue that by using a schema-less database, we're not actually schema-less, we have just moved the schema logic from the database to the application layer. In node.js we would do this by using the mongoose module.
+
+Mongoose is an Object Document Mapper(ODM) for MongoDB. It's the layer in between our data and our database, and gives us a schema-based way to model our data, and validating the data before putting it in our database.
 
 
 #### Explain, using relevant examples, the strategy for querying MongoDB (all CRUD operations)
 
-TODO
+When dealing with a database, you would often like to use the singleton pattern for the connections. This will ensure that you reuse the same connection to the database instead of creating a new for every operation. 
+
+In order to save the precious resource, we have a db module that will have a singleton of the connection:
+
+```javascript
+var MongoClient = require('mongodb').MongoClient
+var connection;
+var connect = function (url, done) {
+    if (connection) return done()
+
+    MongoClient.connect(url, function (err, db) {
+        if (err) {
+            return done(err);
+        }
+        connection = db;
+        console.log("DB connection ready");
+        done();
+    })
+}
+var get = function () {
+    return connection;
+}
+var close = function (done) {
+    if (connection) {
+        connection.close(function (err, result) {
+            connection = null;
+            done(err)
+        })
+    }
+}
+module.exports.connect = connect;
+module.exports.get = get;
+module.exports.close = close;
+```
+
+So we can call the connect, and it will either make a new connection or return the existing one. 
+Now we need a model where we use our connection. For this example we'll have a simple joke model, that will store jokes and allow CRUD operations on the jokes.
+
+First we need to require the connection that we just made, and the ObjectID from the BSON module. 
+```javascript
+var connect = require("../db/db");
+var ObjectId = require('mongodb').ObjectID;
+```
+
+Now we can use the connect module that we made to create a new joke:
+We'll create a function that takes in the new joke object, and a callback as parameter.
+The function will call the connect.get method to get the connection, and call 'collection("jokes")' on the connection.
+This will give us the "jokes" collection of our database. On this collection, we call 'insert', which takes in the new joke object and a function. The function will callback with either an error or data.
+We then check if an error was returned or if data was returned, and call the callback function with the result.
+
+```javascript
+function _addJoke(jokeToAdd, callback) {
+    var db = connect.get();
+    db.collection("jokes").insert(jokeToAdd, function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, data);
+        }
+    });
+}
+```
+
+The rest of the CRUD operation pretty much follows the same structure, but calls another function on the collection object.
+This is the function for getting all jokes in our database:
+```javascript
+function _allJokes(callback) {
+    var db = connect.get();
+    db.collection("jokes").find({}).toArray(function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, data);
+        }
+    });
+}
+```
+Instead of the "insert" function, we use the "find" which will return a cursor(A pointer to the result set of our query). On the cursor we call .toArray to get the result as an array and again call the callback function with the returned data.
+
+This is an Update example using Mongodb:
+```javascript
+function _editJoke(jokeToEdit, callback) {
+    var db = connect.get();
+    db.collection("jokes").updateOne({
+        "_id": new ObjectId(jokeToEdit._id)
+    }, {
+        $currentDate: {
+            lastEdited: true
+        },
+        $set: {
+            joke: jokeToEdit.joke,
+            type: jokeToEdit.type
+        }
+    }, function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, data);
+        }
+    });
+}
+```
+For the update, we have to give a few more objects to the "updateOne" method. We give it the id of the joke that we want to update, we also give it an object where we tell it to update the "lastEdited" field and what fields to update.
+
+For the delete we take in the ID of the joke we want to delete:
+```javascript
+function _deleteJoke(id, callback) {
+    var db = connect.get();
+    db.collection("jokes").remove({
+        "_id": new ObjectId(id)
+    }, function (err, data) {
+        if (err) {
+            callback(err);
+        } else {
+            callback(null, data);
+        }
+    })
+}
+```
+
+Since we want to use these operations as a module in for instance a REST-API we have to export our functions:
+```javascript
+exports.allJokes = _allJokes;
+exports.addJoke = _addJoke;
+exports.editJoke = _editJoke;
+exports.deleteJoke = _deleteJoke;
+```
+
 
 #### Demonstrate, using a REST-API, how to perform all CRUD operations on a MongoDB
 
-TODO
+We can wrap the previous made CRUD operations in a REST-API like this:
+
+
+We send all api request to our api route object from the app.js file:
+```javascript
+var api = require('./routes/api');
+app.use('/api', api);
+```
+
+In our api.js route we require the following modules:
+```javascript
+var express = require('express');
+var router = express.Router();
+var jokes = require('../model/jokes');
+```
+
+Now can we access the router and send data back and forth between the jokes module that we made in the last question.
+We can use the create like this:
+```javascript
+router.post('/joke', function (req, res, next) {
+    jokes.addJoke(req.body, function (err, data) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(data);
+        }
+    });
+});
+```
+We will get all HTTP POST request on the '/joke' path and call the jokes.addJoke function.
+We wrote the jokes.addJoke so it would take the new joke and a function as parameters. We will get the new joke from the request.body object. The addJoke can both give back and error or the data. So in the callback function we check whether we got an error or data back and send the appropriate data back.
+
+The other CRUD operations follows the same structure:
+
+Read:
+```javascript
+router.get('/jokes', function (req, res, next) {
+    jokes.allJokes(function (err, data) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(data);
+        }
+    });
+});
+```
+
+Update:
+```javascript
+router.put('/joke', function (req, res, next) {
+    jokes.editJoke(req.body, function (err, data) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(data);
+        }
+    });
+});
+```
+
+Delete:
+```javascript
+router.delete('/joke/:_id', function (req, res, next) {
+    jokes.deleteJoke(req.params._id, function (err, data) {
+        if (err) {
+            res.send(err);
+        } else {
+            res.send(data);
+        }
+    });
+});
+```
+
 
 
 #### Explain the benefits from using Mongoose, and provide an example involving all CRUD operations
 
-TODO
+One of the first things you'll hear about MongoDB is that it's schema-less!
+
+In order to understand schema-less we have to understand how the relational database uses schemas.
+In a relational database, we have tables that have predefined columns. 
+We can for instance have a column with a 'firstname', and we tell the database that this column can only contain text.
+Or we can have a date of birth column where the database knowns that only Date objects can fit into.
+
+So with relational databases, we define a schmea for the data we put in, so we have a structured layer for all the data.
+If we try to insert some data that doesn't fit the structure we have defined, we will simply get an error.
+The schema way of structuring your data, can both be good and bad. 
+If we have data that has very consistent structure and fits well with the relational database, it's no problem, but as soon as we want to change the structure of the data, it often leeds to downtime or annoying complications. 
+
+This is where the schema-less databases comes in.
+By not defining what kind of data needs to be in our database, we are alot more free to choose what data to store.
+We can for example have a person where we only have the firstname stored, but also store another person with both firstname, lastname, date of birth without any problems.
+If we later on want to add extra information to our persons, this can easily be achieved, by simply adding the data to the person.
+So the schema-less way increase the overall flexability of our database.
+
+When looking at it like this, the schema-less approach seems way better than using schemas.
+But there are some arguments whether fully schema-less is actually a good thing.
+Lets look at an example using mongoDB:
+
+We have a database filled with addresses, some of them are like this: 
+
+{'firstname': 'Jonas', 'lastname': 'Bjoern', '**zip**': '2860'}
+
+and some like this:
+
+{'firstname': 'Lars', 'lastname': 'Mortensen', '**zipcode**': '2860'}
+
+This is perfectly legal to do in our database, but gives us some problems when we want to manipulate the data.
+Lets say we want to find all persons that live in zipcode 2860:
+persons.find({'zip': '2860'})
+This would however only give us 'Jonas', because 'Lars' doesn't have a field called "zip", but instead it's called "zipcode".
+
+So even though we're using a schema-less database, we still need to have an implicit schema, so we all know that a person should have a zipcode and not zip (or vise verca). One could argue that by using a schema-less database, we're not actually schema-less, we have just moved the schema logic from the database to the application layer. In node.js we would do this by using the mongoose module.
+
+Mongoose is an Object Document Mapper(ODM) for MongoDB. It's the layer in between our data and our database, and gives us a schema-based way to model our data, and validating the data before putting it in our database.
+It consist of 2 core things: Schemas and Models.
+
+A schema is an object that defines the structure of the docuemnts that we want to store in our MongoDB collection. In the schema we can define types and validator for all our data.
+
+A model is an object that gives you access to a collection, allowing you to query the collection and use the Schema to validate any documents you save to that collection. Instances of these models represent documents which can be saved and retrieved from our database.
+
+
+
 
 
 #### Explain how redis "fits" into the NoSQL world, and provide an example of how to use it.
@@ -272,4 +553,5 @@ http://www.ignoredbydinosaurs.com/2013/05/explaining-non-relational-databases-my
 https://www.mongodb.com/nosql-explained
 http://www.techrepublic.com/blog/10-things/10-things-you-should-know-about-nosql-databases/
 http://www.pc-freak.net/images/horizontal-vs-vertical-scaling-vertical-and-horizontal-scaling-explained-diagram.png
-http://js2016.azurewebsites.net/mongoDB/mongo.html
+http://js2016.azurewebsites.net
+https://docs.mongodb.org
